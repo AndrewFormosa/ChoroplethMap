@@ -1,0 +1,80 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="stylesheet.css">
+    <title>Choropleth Map</title>
+</head>
+<body>
+    <script src="https://cdn.freecodecamp.org/testable-projects-fcc/v1/bundle.js"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="http://d3js.org/topojson.v1.min.js"></script>
+    <script src="https://d3js.org/d3-geo-projection.v2.min.js"></script>
+    <script src="https://unpkg.com/topojson-client@3"></script>
+
+    <script>
+
+        const w = window.innerWidth - 150;
+        const h = window.innerHeight - 250;
+        const padding = 100;
+
+        let educationData;
+        let countyData;
+
+        var projection = d3.geoMercator()
+  .scale(1)
+  .translate([200, 280])
+  .center([0, 5]);
+
+        const svg = d3.select("body")
+            .append("div")
+            .attr("class", "CloroplethMap")
+            .append("svg")
+            .attr("id","canvas")
+            .attr("width", w)
+            .attr("height", h)
+
+        const tooltip = d3.select("body")
+            .append("div")
+            .attr("id", "tooltip")
+
+        fetch("https://cdn.freecodecamp.org/testable-projects-fcc/data/choropleth_map/counties.json")
+            .then(response => response.json())
+            .then(countData => {
+            // This topojson.feature methodconverts topojson object into geojson format so that it can be used.
+            // takes two arguments, the first is the topojson data and the second is the peice of information
+            // that we are interested in ( ie the counties info)
+            // then we only need the reatures
+            countyData=topojson.feature(countData,countData.objects.counties).features; //method 
+            
+
+                fetch("https://cdn.freecodecamp.org/testable-projects-fcc/data/choropleth_map/for_user_education.json")
+            .then(response => response.json())
+            .then(eduData => {
+            educationData=eduData;
+
+                console.log(countData);
+                console.log(countyData);
+                console.log(educationData);
+
+                svg.selectAll("path.features")
+                .data(countyData)
+                .enter()
+                .append("path")
+                .attr("d",d3.geoPath())
+             //  .attr("d",d3.geoPath().projection(projection)); //geoPath, given a GeoJSON geometry or feature object, generates an SVG path data string or renders the path to a Canvas           
+               .attr("fill","lightblue");
+            });
+
+
+            });
+
+
+    </script>
+
+
+
+    
+</body>
+</html>
