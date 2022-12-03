@@ -9,14 +9,19 @@
 </head>
 
 <body>
-    <div id="title">United States Educational Attainment</div>
-    <div id="description">Percentage of adults age 25 and older with a bachelor's degree or higher (2010-2014)</div>
+
 
     <script src="https://cdn.freecodecamp.org/testable-projects-fcc/v1/bundle.js"></script>
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="http://d3js.org/topojson.v1.min.js"></script>
     <script src="https://d3js.org/d3-geo-projection.v2.min.js"></script>
     <script src="https://unpkg.com/topojson-client@3"></script>
+
+
+    <div id="title">United States Educational Attainment</div>
+    <hr>
+    <div id="description">Percentage of adults age 25 and older with a bachelor's degree or higher (2010-2014)</div>
+
 
     <script>
 
@@ -52,6 +57,15 @@
             .translate([200, 280])
             .center([0, 5]);
 
+        const legend = d3.select("body")
+            .append("div")
+            .append("svg")
+            .attr("id", "legend")
+            .attr("width", w)
+            .attr("height", 100)
+
+
+
         const svg = d3.select("body")
             .append("div")
             .attr("class", "CloroplethMap")
@@ -65,11 +79,6 @@
             .attr("id", "tooltip")
 
 
-        const legend = d3.select("body")
-            .append("svg")
-            .attr("id", "legend")
-            .attr("width", w)
-            .attr("height", 170)
 
 
 
@@ -91,7 +100,36 @@
                         console.log(countData);
                         console.log(countyData);
                         console.log(educationData);
-                       
+
+
+                        //LEGEND
+                        //legend Axis and Scale
+                        const legendScale = d3.scaleLinear()
+                            .domain([d3.min(legendColours, (d) => d.edu), 0.66])
+                            .range([padding, w - (padding)]);
+                        //set up xAxis
+                        const legendAxis = d3.axisBottom(legendScale)
+                            .tickValues(legendColours.map((d) => d.edu))
+                            .tickFormat(formatPercent);
+
+                        legend.append("g")
+                            .attr("id", "legend-axis")
+                            .attr("transform", "translate(0," + 30 + ")")
+                            .call(legendAxis);
+                        //x-axis title
+
+
+
+                        legend.selectAll("rect")
+                            .data(legendColours)
+                            .enter()
+                            .append("rect")
+                            .attr("x", (d) => legendScale(d.edu))  //SCALES CALC
+                            .attr("y", (d) => ((10)))
+                            //.attr("width", (d) => (w/(d3.max(tempColours.temp)-d3.min(tempColours.temp))))
+                            .attr("width", (d) => (w - 2 * padding) / 10)
+                            .attr("height", (d) => 20)
+                            .attr("fill", ((d) => blueShades(d.edu * 16.66)));
 
                         svg.selectAll("path.features")
                             .data(countyData)
@@ -100,7 +138,6 @@
                             .attr("d", d3.geoPath())
                             //  .attr("d",d3.geoPath().projection(projection)); //geoPath, given a GeoJSON geometry or feature object, generates an SVG path data string or renders the path to a Canvas           
                             .attr("class", "county")
-                            //  .attr("fill", "lightblue")
                             .attr("data-fips", (d) => d.id)
                             .attr("data-education", (d) => eductionExtract(d.id).bachelorsOrHigher)
                             .attr("fill", (d) => blueShades(eductionExtract(d.id).bachelorsOrHigher / 6))
@@ -125,42 +162,7 @@
                             });
 
 
-                        //LEGEND
-                        //legend Axis and Scale
-                        const legendScale = d3.scaleLinear()
-                            .domain([d3.min(legendColours, (d) => d.edu), 0.66])
-                            //.domain(0,10)
-                            .range([padding, w - (padding)]);
-                        //set up xAxis
-                        const legendAxis = d3.axisBottom(legendScale)
-                            .tickValues(legendColours.map((d) => d.edu))
-                            .tickFormat(formatPercent);
 
-                        legend.append("g")
-                            .attr("id", "legend-axis")
-                            .attr("transform", "translate(0," + padding+")")
-                            .call(legendAxis);
-                        //x-axis title
-                        legend.append("text")
-                            .attr("text-anchor", "middle")
-                            .attr("x", w / 2)
-                            .attr("y", padding + 40)
-                            .attr("class", "axis-heading")
-                            .text("Percentage of adults age 25 and older");
-
-
-                        legend.selectAll("rect")
-                            .data(legendColours)
-                            .enter()
-                            .append("rect")
-                            .attr("x", (d) => legendScale(d.edu))  //SCALES CALC
-                            //  .attr("y", (d) => yScale(new Date(0,d.month-1))-rectHeight/2)
-                            .attr("y", (d) => ((50)))
-                            //.attr("width", (d) => (w/(d3.max(tempColours.temp)-d3.min(tempColours.temp))))
-                            .attr("width", (d) => (w - 2 * padding) / 10)
-                            .attr("height", (d) => 30)
-                            .attr("fill", ((d) => blueShades(d.edu * 16.66)))
-                        //  .attr("class", "cell")
 
 
 
@@ -173,7 +175,7 @@
 
     </script>
 
-<div class="footer">Choropleth Map freeCodeCamp project by Andrew Formosa</div>
+    <div class="footer">Choropleth Map freeCodeCamp project by Andrew Formosa</div>
 
 
 </body>
