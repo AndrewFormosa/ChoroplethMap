@@ -1,9 +1,25 @@
 body{
+    text-align: center;
+    background: grey;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
 }
 
+svg{
+    align-content: center;
+}
+
+#title{
+    margin: 10px;
+font-size: 2rem;
+}
+#description{
+    margin:10px;
+font-size:1.2rem;
+}
+
 #canvas{
-    background: green;
+   
 }
